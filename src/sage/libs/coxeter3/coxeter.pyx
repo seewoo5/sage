@@ -1105,6 +1105,37 @@ cdef class CoxGroupElement:
         l = [kl_poly[i] for i in range(kl_poly.deg()+1)]
         return ZZq(l)
 
+    def inverse_kazhdan_lusztig_polynomial(self, v):
+        """
+        Return the _inverse_ Kazhdan-Lusztig polynomial `Q_{u,v}` where `u` is ``self``.
+
+        Currently this is a bit inefficient as it constructs the
+        polynomial from its string representation.
+
+        EXAMPLES::
+
+            sage: from sage.libs.coxeter3.coxeter import get_CoxGroup as CoxGroup
+            sage: W = CoxGroup(['A', 2])
+        """
+        cdef CoxGroupElement vv
+        if not isinstance(v, CoxGroupElement):
+            vv = CoxGroupElement(self._parent_group, v)
+        else:
+            vv = v
+
+        ZZq = PolynomialRing(ZZ, 'q')
+        if not self.group.inOrder(self.word, vv.word):
+            return ZZq.zero()
+
+        cdef CoxNbr x = self.group.extendContext(self.word)
+        cdef CoxNbr y = self.group.extendContext(vv.word)
+        cdef c_KLPol invkl_poly = self.group.invklPol(x, y)
+        if invkl_poly.isZero():
+            return ZZq.zero()
+        cdef size_t i
+        l = [invkl_poly[i] for i in range(invkl_poly.deg()+1)]
+        return ZZq(l)
+
     def mu_coefficient(self, v):
         r"""
         Return the mu coefficient `\mu(u,v)` where `u` is this element.
