@@ -125,6 +125,7 @@ cdef extern from "coxeter/coxgroup.h":
         CoxEntry M(Generator s, Generator t)
         CoxNbr extendContext(c_CoxWord& w)
         c_KLPol klPol(CoxNbr& x, CoxNbr& y)
+        c_KLPol invklPol(CoxNbr& x, CoxNbr& y)
         bint inOrder(c_CoxWord& u, c_CoxWord& w)
         bint inOrder(CoxNbr x, CoxNbr y)
 
