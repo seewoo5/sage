@@ -362,6 +362,68 @@ class CoxeterGroup(UniqueRepresentation, Parent):
         d = {-2*deg+len_diff: coeff for deg,coeff in enumerate(p) if coeff != 0}
         return ZZq(d)
 
+    def inverse_kazhdan_lusztig_polynomial(self, u, v, constant_term_one=True):
+        r"""
+        Return the "inverse" Kazhdan-Lusztig polynomial `Q_{u,v}`.
+
+        INPUT:
+
+        - ``u``, ``v`` -- elements of the underlying Coxeter group
+        - ``constant_term_one`` -- (default: ``True``) True uses the constant equals one convention,
+           False uses the Leclerc-Thibon convention
+
+        .. SEEALSO::
+
+            - :class:`~sage.combinat.kazhdan_lusztig.KazhdanLusztigPolynomial`
+            - :meth:`parabolic_kazhdan_lusztig_polynomial`
+
+        EXAMPLES::
+
+
+
+        .. NOTE::
+
+            Needs to be updated:
+
+            Coxeter3, as well as Sage's native implementation in
+            :class:`~sage.combinat.kazhdan_lusztig.KazhdanLusztigPolynomial`
+            use the convention under which Kazhdan-Lusztig
+            polynomials give the change of basis from the `(C_w)_{w\in W}`
+            basis to the `(T_w)_{w\in W}` of the Hecke algebra of `W` with
+            parameters `q` and `q^{-1}`:
+
+                .. MATH:: C_w = \sum_u  P_{u,w} T_u.
+
+            In particular, `P_{u,u}=1`::
+
+                sage: all(W.kazhdan_lusztig_polynomial(u,u) == 1 for u in W)
+                True
+
+            This convention differs from Theorem 2.7 in [LT1998]_ by:
+
+            .. MATH::
+
+                {}^{LT} P_{y,w}(q) = q^{\ell(w)-\ell(y)} P_{y,w}(q^{-2})
+
+            To access the Leclerc-Thibon convention use::
+
+
+
+        TESTS:
+
+            Needs to be added:
+
+        """
+        u, v = self(u), self(v)
+        q = u.value.inverse_kazhdan_lusztig_polynomial(v.value)
+        if constant_term_one:
+            return q
+        ZZq = PolynomialRing(ZZ, 'q', sparse=True)
+        # This is the same as q**len_diff * p(q**(-2))
+        len_diff = v.length()-u.length()
+        d = {-2*deg+len_diff: coeff for deg,coeff in enumerate(q) if coeff != 0}
+        return ZZq(d)
+
     def parabolic_kazhdan_lusztig_polynomial(self, u, v, J, constant_term_one=True):
         r"""
         Return the parabolic Kazhdan-Lusztig polynomial `P_{u,v}^{-,J}`.
